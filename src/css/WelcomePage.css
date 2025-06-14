@@ -1,0 +1,92 @@
+/* 
+
+.carousel-container {
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.carousel {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  transition: transform 0.5s ease-in-out;
+  animation: slideAnimation 10s linear infinite;
+}
+
+.carousel-card {
+  position: absolute;
+  width: 20%;
+  text-align: center;
+  transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8) translateX(0);
+  padding: 40px;
+}
+
+
+@keyframes slideAnimation {
+  
+}
+
+.carousel-card.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1.2) translateX(0);
+  z-index: 2;
+}
+
+.carousel-card.prev {
+  opacity: 0.5;
+  visibility: visible;
+  transform: scale(0.8) translateX(-120%);
+  z-index: 1;
+}
+
+.carousel-card.next {
+  opacity: 0.5;
+  visibility: visible;
+  transform: scale(0.8) translateX(120%);
+  z-index: 1;
+}
+
+.carousel-card.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8) translateX(0);
+}
+
+.card-img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.card-description {
+  font-size: 1rem;
+  color: #666;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.carousel-btn.prev {
+  left: 10px;
+}
+
+.carousel-btn.next {
+  right: 10px;
+} */
