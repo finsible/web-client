@@ -1,17 +1,106 @@
 import googleLogo from "../assets/google_logo.svg";
-import { useState, useEffect } from "react";
+import leftArrowLight from "../assets/dark/left_arrow_light.svg";
+import leftArrowDark from "../assets/light/left_arrow_dark.svg";
+import rightArrowDark from "../assets/light/right_arrow_dark.svg";
+import rightArrowLight from "../assets/dark/right_arrow_light.svg";
+import { useState, useEffect, useRef } from "react";
 import Button from "./Button";
 import CarouselIndicators from "./Carouselndicators";
 import slides from "../data/SlidesData";
 import BlurryBlobs from "./BlurryBlobs";
+import CarouselCardImage from "./CarouselCardImage";
+import CarouselCardInfo from "./CarouselCardInfo";
+import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
+import { useLocation } from "react-router";
+import axios from "axios";
 
 export default function WelcomePage() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const [isOnboarding, setIsOnboarding] = useState(false);
+  const [cardInfoHeight, setCardInfoHeight] = useState(0);
+  const [authData, setAuthData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const cardInfoRef = useRef(null);
+
+  const location = useLocation();
+
+  // custom google login authorisation process redirects and refrehses the page hence need to fetch auth code fro url
+  useEffect(() => {
+    const currentURL = window.location.href;
+    console.log("URL changed:", currentURL);
+
+    const urlParams = new URLSearchParams(location.search);
+    const authCode = urlParams.get("code");
+
+    if (authCode !== null) {
+      // sending to backend to authenticate and get JWT
+      axios
+        .post(`http://localhost:9090/auth/googleSignInWithCode`, null, {params: {
+          code: authCode,
+          clientId:
+            "353640413518-5nqljv0ar8qn7k880qdtkodtamts26t9.apps.googleusercontent.com",
+        }})
+        .then((res) => {
+          if (res.status === 200) {
+            console.log("Authentication successful:", res.data);
+            // Navigate to home or dashboard
+            // navigate('/dashboard');
+          }
+        })
+        .catch((err) => {
+          console.error("Authentication failed:", err);
+        });
+    } else {
+      console.log("No id_token found in URL");
+    }
+  }, [location.search]); // ✅ Trigger when URL search params change
+
+  // Measure card info height when content changes to align buttons accordingly
+  useEffect(() => {
+    if (!cardInfoRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Only one element observed, so entries[0] is always the card info
+      const height = entries[0].contentRect.height;
+      setCardInfoHeight(height);
+    });
+
+    // Only observe the element we care about
+    resizeObserver.observe(cardInfoRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [activeCardIndex]);
+
+  // One Tap login (optional)
+  useGoogleOneTapLogin({
+    onSuccess: handleCredentialResponse,
+    onError: () => {
+      console.log("One Tap Failed");
+    },
+    use_fedcm_for_prompt: true,
+    cancel_on_tap_outside: true,
+    disabled: activeCardIndex !== 3, // Only show on step 4
+  });
+
+  // Fallback button login
+  const googleLogin = useGoogleLogin({
+    onSuccess: (obj) => {},
+    onError: () => {
+      console.log("Button Login Failed");
+      setIsLoading(false);
+    },
+    ux_mode: "redirect",
+    use_fedcm_for_button: true,
+    redirect_uri: "http://localhost:5173", // should be same here and in backend with redirect auth-code flow
+    flow: "auth-code",  // this is enabling in-window google email selection in chrome
+    onNonOAuthError: (error) => {
+      console.error("Non-OAuth Error:", error);
+    },
+  });
 
   function onGetStarted() {
-    setIsOnboarding(true);
-    // Start with the first slide when getting started
     setActiveCardIndex(1);
   }
 
@@ -19,72 +108,143 @@ export default function WelcomePage() {
     setActiveCardIndex(
       (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
     );
-    if (activeCardIndex == 1) {
-      // active card index does not get updated instantly
-      setIsOnboarding(false);
-    }
   }
   function nextSlide() {
     setActiveCardIndex((prevIndex) => (prevIndex + 1) % slides.length);
   }
 
+  // for one tap login
+  async function handleCredentialResponse(credentialResponse) {
+    try {
+      setAuthData(credentialResponse);
+      setIsLoading(true);
+
+      const formData = new FormData();
+      // if(credentialResponse.)
+
+      formData.append("token", credentialResponse.credential);
+      formData.append(
+        "clientId",
+        "353640413518-5nqljv0ar8qn7k880qdtkodtamts26t9.apps.googleusercontent.com"
+      );
+
+      const response = await fetch("http://localhost:9090/auth/googleSignIn", {
+        method: "POST",
+        body: formData,
+      });
+
+      // Check if response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Parse the response
+      // const data = await response.json();
+      // console.log("Backend response:", data);
+
+      // // Handle successful authentication
+      // // Store tokens or user data as needed
+      // if (data.token) {
+      //   localStorage.setItem("authToken", data.token);
+      // }
+      // if (data.user) {
+      //   localStorage.setItem("user", JSON.stringify(data.user));
+      // }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Authentication error:", error);
+      setIsLoading(false);
+
+      // Reset auth data on error
+      setAuthData(null);
+    }
+  }
+
+  // for custom google button 
+  const handleGoogleSignIn = () => {
+    setIsLoading(true);
+    googleLogin();
+  };
+
   return (
-    <div className="absolute inset-0 p-1 mid:p-2 overflow-hidden">
+    <div className="absolute inset-0 p-4 mid:p-8 overflow-hidden">
       <BlurryBlobs />
-      <div className="h-full w-full p-1 mid:p-2 grid grid-cols-1 mid:grid-cols-2 grid-rows-[1fr_3fr_4fr] mid:grid-rows-[2fr_5fr_3fr] gap-1">
-        <div className="mid:col-span-2 font-eb-garamond text-size-sm text-onBackground">
+      <div className="h-full w-full p-1 mid:p-2 grid grid-cols-1 mid:grid-cols-2 grid-rows-[1fr_3.5fr_4fr] mid:grid-rows-[2fr_5fr_3fr] gap-1">
+        {/* Name of the app - need to ass logo as well */}
+        <div className="mid:col-span-2 font-eb-garamond text-size-lg small:text-size-sm text-onBackground">
           Finsible
         </div>
 
-        <div className="row-start-3 mid:row-start-2 mid:col-span-1 flex flex-col gap-1 justify-center h-full">
-          <div className="text-size-2xsm font-outfit text-outline">
+        {/* Step, title, description according to image with buttons for navigation */}
+        <div className="row-start-3 mid:row-start-2 mid:col-span-1 flex flex-col justify-center h-full">
+          <div className="text-size-4xsm small:text-size-3xsm font-outfit font-extralight text-outline hidden mid:block">
             Step {activeCardIndex + 1} of 4
           </div>
-          <div className="relative min-h-[40px] mid:min-h-[65px] flex justify-center items-start h-auto">
+
+          {/* Card info with ref to measure height */}
+          <div
+            className="relative flex justify-center items-start transition-all"
+            style={{ height: `${cardInfoHeight + 40}px` }}
+          >
             {slides.map((slide, index) => (
               <CarouselCardInfo
+                ref={index === activeCardIndex ? cardInfoRef : null}
                 key={index}
                 title={slide.title}
                 description={slide.description}
-                isActive={activeCardIndex == index}
-              ></CarouselCardInfo>
+                isActive={activeCardIndex === index}
+              />
             ))}
           </div>
-          <div className="relative flex items-center gap-1">
+
+          {/* Buttons positioned dynamically based on measured height */}
+          <div className="flex items-center gap-2 small:gap-4 mid:mt-2">
             <Button
-              handleClick={onGetStarted}
+              onClick={onGetStarted}
+              isHidden={activeCardIndex > 0}
+              lightImage={rightArrowLight}
+              darkImage={rightArrowDark}
+              endIcon={true}
+              className="flex-1/2 small:flex-initial"
               name="Get Started"
-              isHidden={isOnboarding}
-              weight={1}
-              arrowIcon="right"
             />
+
             <Button
-              handleClick={prevSlide}
+              onClick={prevSlide}
+              isHidden={activeCardIndex === 0}
+              variant="secondary"
+              startIcon={true}
+              lightImage={leftArrowDark}
+              darkImage={leftArrowLight}
+              className="flex-1/2 small:flex-initial"
               name="Back"
-              isHidden={!isOnboarding}
-              isSecondary={true}
-              weight={activeCardIndex == 3 ? 0 : 1}
-              arrowIcon="left"
             />
+
             <Button
-              handleClick={nextSlide}
+              onClick={nextSlide}
+              isHidden={activeCardIndex === 0 || activeCardIndex === 3}
+              endIcon={true}
+              lightImage={rightArrowLight}
+              darkImage={rightArrowDark}
+              className="flex-1/2 small:flex-initial"
               name="Next"
-              isHidden={!isOnboarding || activeCardIndex === 3}
-              weight={1}
-              arrowIcon="right"
             />
+
             <Button
               name="Sign in with Google"
-              lightIcon={googleLogo}
-              darkIcon={googleLogo}
-              isHidden={!isOnboarding || activeCardIndex !== 3}
-              weight={1}
+              startIcon={true}
+              lightImage={googleLogo}
+              darkImage={googleLogo}
+              isHidden={activeCardIndex !== 3}
+              id="googleSignIn"
+              className="flex-9/10 small:flex-initial"
+              onClick={handleGoogleSignIn}
             />
           </div>
         </div>
 
-        {/* </div> */}
-
+        {/* Image carousel with indicators */}
         <div className="row-start-2 mid:col-start-2 mid:row-start-2 flex mid:flex-row flex-col items-center">
           <div className="relative h-full w-full flex flex-col overflow-hidden flex-1 items-star justify-center">
             {slides.map((slide, index) => (
@@ -99,80 +259,12 @@ export default function WelcomePage() {
                   index
                 }
                 nextIndex={(activeCardIndex + 1) % slides.length === index}
-              ></CarouselCardImage>
+              />
             ))}
           </div>
-          <CarouselIndicators
-            activeCardIndex={activeCardIndex}
-          ></CarouselIndicators>
+          <CarouselIndicators activeCardIndex={activeCardIndex} />
         </div>
-        {/* </div> */}
       </div>
-    </div>
-  );
-}
-
-function CarouselCardImage({
-  darkModeImage,
-  lightModeImage,
-  title,
-  isActive,
-  prevIndex,
-  nextIndex,
-}) {
-  return (
-    <div
-      className={`absolute inset-0 flex flex-row mid:flex-col items-center justify-center transition-all duration-500 linear
-        ${
-          isActive
-            ? "opacity-100 translate-x-0 translate-y-0 pointer-events-auto"
-            : prevIndex
-            ? "opacity-0 -translate-x-[100px] mid:translate-x-0 mid:-translate-y-[100px] pointer-events-none"
-            : nextIndex
-            ? "opacity-0 translate-x-[100px] mid:-translate-x-0 mid:translate-y-[100px] pointer-events-none"
-            : "opacity-0 translate-x-0 translate-y-0 pointer-events-none"
-        }`}
-      // style={{
-      //   transition:
-      //     "all 500ms linear, opcaity 100ms cubic-bezier(0.16, 1, 0.3, 1)",
-      // }}
-    >
-      <img
-        className="block dark:hidden w-full max-w-20 h-full"
-        src={lightModeImage}
-        alt={title}
-      />
-      <img
-        className="hidden dark:block w-full max-w-20 h-full"
-        src={darkModeImage}
-        alt={`${title} (dark mode)`}
-      />
-    </div>
-  );
-}
-function CarouselCardInfo({ title, description, isActive }) {
-  return (
-    <div className={`absolute max-w-full flex flex-col`}>
-      <h2
-        className={`text-onSurface font-eb-garamond text-size-sm mid:text-size-base mid:leading-3.5 transition-all duration-200 ease-in my-1 mid:my-2 ml-[4.8%]
-        ${
-          isActive
-            ? "opacity-100 scale-110 pointer-events-auto"
-            : "opacity-0 scale-100 pointer-events-none"
-        }`}
-      >
-        {title}
-      </h2>
-      <p
-        className={`text-onSurfaceVariant text-size-2xsm transition-all duration-200 ease-in 
-        ${
-          isActive
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-      >
-        {description}
-      </p>
     </div>
   );
 }
