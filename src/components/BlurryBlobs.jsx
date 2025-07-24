@@ -1,26 +1,6 @@
 export default function BlurryBlobs() {
-  //   return (
-  //     <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
-  //       <div className="absolute w-30 h-30 rounded-full bg-[#2ee37d]/20 blur-xl animate-blob-fast">
-  //       </div>
-  //       <div
-  //         className="absolute w-30 h-30 rounded-full bg-[#f4740b]/30 blur-xl animate-blob-medium"
-  //         style={{ right: "0%" }}
-  //       ></div>
-
-  //       <div
-  //         className="absolute w-30 h-30 rounded-full bg-[#ed6974]/30 blur-xl animate-blob-fast"
-  //         style={{ top: "60%", right: "0%" }}
-  //       ></div>
-  //       <div
-  //         className="absolute w-30 h-30 rounded-full bg-[#51dff5]/30 blur-xl animate-blob-medium"
-  //         style={{ top: "60%", right: "60%" }}
-  //       ></div>
-  //     </div>
-  //   );
   return (
     <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none bg-background">
-      
       {/* Blob 1: Complex border radius */}
       <div
         className="absolute w-40 h-20 dark:bg-[#040d1278] bg-[#FFFBDE] blur-xl animate-blob-slow"
@@ -42,7 +22,7 @@ export default function BlurryBlobs() {
 
       {/* Blob 3: Yet another complex border radius */}
       <div
-        className="absolute w-36 h-26 dark:bg-[#183D3D] bg-[#99bc85e9] blur-xl animate-blob-fast"
+        className="absolute w-3/5 h-1/2 dark:bg-[#183D3D] bg-[#99bc85e9] blur-[100px] animate-blob-fast"
         style={{
           top: "60%",
           borderRadius: "40% 60% 60% 40% / 70% 30% 70% 30%",
@@ -51,7 +31,7 @@ export default function BlurryBlobs() {
 
       {/* Blob 4: Elliptical shape */}
       <div
-        className="absolute w-46 h-30 dark:bg-[#005b4191] bg-[#C1CFA1] blur-xl animate-blob-medium"
+        className="absolute w-1/2 h-1/3 dark:bg-[#005b4191] bg-[#C1CFA1] blur-[100px] animate-blob-medium"
         style={{
           top: "70%",
           right: "15%",

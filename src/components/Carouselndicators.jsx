@@ -12,10 +12,10 @@ export default function CarouselIndicators({ activeCardIndex }) {
 function Indicator({activeCardIndex, index}) {
   return (
     <hr
-      className={`w-1.5 mid:w-[1px] rounded-xs ml-0.5 mt-2 mid:mb-0.5 mid:mt-0 mid:ml-1 transition-all duration-500 ease-in-out ${
+      className={`h-1 mid:w-[5px] rounded-xs ml-2 mt-2 mid:mb-2 mid:mt-0 transition-all duration-500 ease-in-out ${
         activeCardIndex == index
-          ? "text-outline bg-outline w-3 mid:h-3"
-          : "text-outlineVariant bg-outlineVariant w-1.5 mid:h-1.5"
+          ? "text-outline bg-outline w-15 mid:h-15"
+          : "text-outlineVariant bg-outlineVariant w-7 mid:h-7"
       }`}
     ></hr>
   );
