@@ -1,0 +1,218 @@
+import axios from "axios";
+
+// Create axios instance with base configuration
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:9090",
+  timeout: 0, // 10 second timeout
+  withCredentials: true, // Include cookies in requests and response
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
+
+apiClient.interceptors.request.use(
+  (config) => {
+    if (config.data) {
+      // If data is FormData, append deviceType
+      if (config.data instanceof FormData) {
+        config.data.append("deviceType", "web");
+      }
+      // If data is URLSearchParams, append deviceType
+      else if (config.data instanceof URLSearchParams) {
+        config.data.append("deviceType", "web");
+      }
+      // If data is object, merge deviceType
+      else if (typeof config.data === "object") {
+        config.data = {
+          ...config.data, // User data can override deviceType if needed
+          deviceType: "web",
+        };
+      }
+    } else {
+      // If no data, create object with deviceType
+      config.data = { deviceType: "web" };
+    }
+    return config;
+  },
+  (error) => {
+    console.error("Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor - Handle common responses
+apiClient.interceptors.response.use(
+  (response) => {
+    // Log successful response
+    console.log(
+      `API Response: ${response.config.method?.toUpperCase()} ${
+        response.config.url
+      }`,
+      {
+        status: response.status,
+        data: response.data,
+      }
+    );
+
+    return response;
+  },
+  (error) => {
+    var errorObj = {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      url: error.config?.url,
+      method: error.config?.method,
+    };
+
+    // Handle different error statuses
+    if (error.response?.status === 400) {
+      console.log("Bad Request ", errorObj);
+    } else if (error.response?.status === 401) {
+      // cookies cleared through backend
+      console.log("Authentication failed - redirecting to login ", errorObj);
+      handleAuthError();
+    } else if (error.response?.status === 403) {
+      console.log("Access forbidden ", errorObj);
+      // Handle forbidden access
+    } else if (error.response?.status >= 500) {
+      console.log("Server error ", errorObj);
+      // Handle server errors
+    }
+    return Promise.reject(error);
+  }
+);
+
+function handleAuthError() {
+  // Redirect to login
+  window.location.href = "/";
+}
+
+// Main API request function
+export const apiRequest = {
+  // GET request
+  get: async (url, config = {}) => {
+    try {
+      const response = await apiClient.get(url, config);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // POST request
+  post: async (url, data = {}, config = {}) => {
+    try {
+      const response = await apiClient.post(url, data, config);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // PUT request
+  put: async (url, data = {}, config = {}) => {
+    try {
+      const response = await apiClient.put(url, data, config);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // PATCH request
+  patch: async (url, data = {}, config = {}) => {
+    try {
+      const response = await apiClient.patch(url, data, config);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // DELETE request
+  delete: async (url, config = {}) => {
+    try {
+      const response = await apiClient.delete(url, config);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // File upload
+  uploadFile: async (url, file, onUploadProgress = null) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: onUploadProgress
+          ? (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              onUploadProgress(percentCompleted);
+            }
+          : undefined,
+      };
+
+      const response = await apiClient.post(url, formData, config);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Form data request (for your Google auth)
+  // Axios will automatically serialize the data object to urlencoded format if the content-type header is set to "application/x-www-form-urlencoded".
+  postForm: async (url, formData, config = {}) => {
+    try {
+      const response = await apiClient.post(url, formData, {
+        ...config,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          ...config.headers,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+
+// Handle API errors consistently
+const handleApiError = (error) => {
+  const apiError = {
+    message:
+      error.response?.data?.message || error.message || "An error occurred",
+    status: error.response?.status || error.status || 500,
+    data: error.response?.data || null,
+    isNetworkError: !error.response,
+  };
+
+  // Add user-friendly messages --> not needed if backend message is proper apart from network error case
+  if (apiError.isNetworkError) {
+    apiError.message = "Network error. Please check your connection.";
+  }
+
+  return apiError;
+};
+
+// Utility functions
+export const apiUtils = {
+  // Logout user
+  logout: () => {
+    handleAuthError();
+  },
+};
+
+// Export the axios instance for advanced usage
+export { apiClient };
+
+// Default export for backward compatibility
+export default apiRequest;
