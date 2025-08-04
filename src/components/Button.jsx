@@ -1,5 +1,3 @@
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-
 export default function Button({
   // Content
   children,

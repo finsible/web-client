@@ -16,13 +16,13 @@
   --text-size-4xsm: 0.9rem;
 
   --breakpoint-mid: 900px;
-  --breakpoint-small:500px;
-  
+  --breakpoint-small: 500px;
+
   --animate-blob-slow: blob 15s linear infinite;
   --animate-blob-medium: blob 10s linear infinite alternate-reverse;
   --animate-blob-fast: blob 7s linear infinite alternate;
 
-  @keyframes blob{
+  @keyframes blob {
     0% {
       transform: translate(0px, 0px) scale(1);
     }
@@ -90,7 +90,7 @@
   --color-onErrorContainer: #410002;
 
   /* Utilities */
-  --color-outline: #000000; 
+  --color-outline: #000000;
   --color-outlineVariant: #b4bfbd;
   --color-scrim: #000000;
   --color-inverseSurface: #2b3231;
@@ -148,7 +148,7 @@
     --color-onTertiaryContainer: #cfe5ff;
 
     /* Background & Surface */
-    --color-background: #040D12;
+    --color-background: #040d12;
     --color-onBackground: #e2e2e2;
     --color-surface: #0e1514;
     --color-onSurface: #dde4e2;
