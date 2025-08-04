@@ -12,7 +12,7 @@ import CarouselCardImage from "./CarouselCardImage";
 import CarouselCardInfo from "./CarouselCardInfo";
 import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import { useLocation } from "react-router";
-import axios from "axios";
+import { apiRequest } from "../utils/apiRequest";
 
 export default function WelcomePage() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
@@ -23,37 +23,18 @@ export default function WelcomePage() {
   const cardInfoRef = useRef(null);
 
   const location = useLocation();
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const localhost = import.meta.env.VITE_LOCALHOST_URI;
 
   // custom google login authorisation process redirects and refrehses the page hence need to fetch auth code fro url
   useEffect(() => {
-    const currentURL = window.location.href;
-    console.log("URL changed:", currentURL);
-
     const urlParams = new URLSearchParams(location.search);
     const authCode = urlParams.get("code");
 
     if (authCode !== null) {
-      // sending to backend to authenticate and get JWT
-      axios
-        .post(`http://localhost:9090/auth/googleSignInWithCode`, null, {params: {
-          code: authCode,
-          clientId:
-            "353640413518-5nqljv0ar8qn7k880qdtkodtamts26t9.apps.googleusercontent.com",
-        }})
-        .then((res) => {
-          if (res.status === 200) {
-            console.log("Authentication successful:", res.data);
-            // Navigate to home or dashboard
-            // navigate('/dashboard');
-          }
-        })
-        .catch((err) => {
-          console.error("Authentication failed:", err);
-        });
-    } else {
-      console.log("No id_token found in URL");
+      handleAuthCodeResponse(authCode);
     }
-  }, [location.search]); // ✅ Trigger when URL search params change
+  }, [location.search]); // Trigger when URL search params change
 
   // Measure card info height when content changes to align buttons accordingly
   useEffect(() => {
@@ -77,11 +58,17 @@ export default function WelcomePage() {
   useGoogleOneTapLogin({
     onSuccess: handleCredentialResponse,
     onError: () => {
+      //show failure on UI
+      setIsLoading(false);
       console.log("One Tap Failed");
     },
     use_fedcm_for_prompt: true,
     cancel_on_tap_outside: true,
     disabled: activeCardIndex !== 3, // Only show on step 4
+    callback: (response) => {
+      setIsLoading(true); // ✅ Start loading immediately on click
+      console.log("One Tap clicked - loading started");
+    },
   });
 
   // Fallback button login
@@ -93,8 +80,8 @@ export default function WelcomePage() {
     },
     ux_mode: "redirect",
     use_fedcm_for_button: true,
-    redirect_uri: "http://localhost:5173", // should be same here and in backend with redirect auth-code flow
-    flow: "auth-code",  // this is enabling in-window google email selection in chrome
+    redirect_uri: localhost, // should be same here and in backend with redirect auth-code flow
+    flow: "auth-code", // this is enabling in-window google email selection in chrome
     onNonOAuthError: (error) => {
       console.error("Non-OAuth Error:", error);
     },
@@ -113,56 +100,49 @@ export default function WelcomePage() {
     setActiveCardIndex((prevIndex) => (prevIndex + 1) % slides.length);
   }
 
-  // for one tap login
-  async function handleCredentialResponse(credentialResponse) {
+  async function handleAuthCodeResponse(authCode) {
     try {
-      setAuthData(credentialResponse);
-      setIsLoading(true);
-
-      const formData = new FormData();
-      // if(credentialResponse.)
-
-      formData.append("token", credentialResponse.credential);
-      formData.append(
-        "clientId",
-        "353640413518-5nqljv0ar8qn7k880qdtkodtamts26t9.apps.googleusercontent.com"
-      );
-
-      const response = await fetch("http://localhost:9090/auth/googleSignIn", {
-        method: "POST",
-        body: formData,
-      });
-
-      // Check if response is ok
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Parse the response
-      // const data = await response.json();
-      // console.log("Backend response:", data);
-
-      // // Handle successful authentication
-      // // Store tokens or user data as needed
-      // if (data.token) {
-      //   localStorage.setItem("authToken", data.token);
-      // }
-      // if (data.user) {
-      //   localStorage.setItem("user", JSON.stringify(data.user));
-      // }
-
-      setIsLoading(false);
+      // sending to backend to authenticate and get JWT
+      const params = {
+        code: authCode,
+        clientId: clientId,
+      };
+      var res = await apiRequest.postForm("auth/googleSignInWithCode", params);
+      setAuthData(res.data);
+      //console.log(res.data);
+      var authCookie = document.cookie.match("is_authenticated");
+      console.log(authCookie);
+      // Navigate to home or dashboard
+      window.location.href = "/";
+      // navigate('/dashboard');
     } catch (error) {
-      console.error("Authentication error:", error);
+      // show something on UI
+      window.location.href = "/";
+    } finally {
       setIsLoading(false);
-
-      // Reset auth data on error
-      setAuthData(null);
     }
   }
 
-  // for custom google button 
-  const handleGoogleSignIn = () => {
+  // for one tap login
+  async function handleCredentialResponse(credentialResponse) {
+    try {
+      setIsLoading(true);
+      const params = {
+        clientId: clientId,
+        token: credentialResponse.credential,
+      };
+      var res = await apiRequest.postForm("auth/googleSignIn", params);
+      setAuthData(res.data);
+    } catch (error) {
+      setAuthData(null);
+      // show something on UI
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // for custom google button
+  const onGoogleSignInButtonClick = () => {
     setIsLoading(true);
     googleLogin();
   };
@@ -208,6 +188,7 @@ export default function WelcomePage() {
               endIcon={true}
               className="flex-1/2 small:flex-initial"
               name="Get Started"
+              loading={isLoading}
             />
 
             <Button
@@ -219,6 +200,7 @@ export default function WelcomePage() {
               darkImage={leftArrowLight}
               className="flex-1/2 small:flex-initial"
               name="Back"
+              loading={isLoading}
             />
 
             <Button
@@ -229,6 +211,7 @@ export default function WelcomePage() {
               darkImage={rightArrowDark}
               className="flex-1/2 small:flex-initial"
               name="Next"
+              loading={isLoading}
             />
 
             <Button
@@ -239,7 +222,8 @@ export default function WelcomePage() {
               isHidden={activeCardIndex !== 3}
               id="googleSignIn"
               className="flex-9/10 small:flex-initial"
-              onClick={handleGoogleSignIn}
+              onClick={onGoogleSignInButtonClick}
+              loading={isLoading}
             />
           </div>
         </div>
