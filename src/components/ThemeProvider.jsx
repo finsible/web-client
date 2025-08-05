@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import sunImage from "../assets/Sun Vector Icon.svg";
 import moonImage from "../assets/Moon Vector Icon.svg";
+
+const ThemeContext = createContext();
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+};
 
 export default function ThemeProvider({ children }) {
   // 1. Get theme from localStorage or system
@@ -48,20 +58,23 @@ export default function ThemeProvider({ children }) {
   };
 
   return (
-    <>
-      <button onClick={toggleTheme} className="fixed top-6 right-2 small:top-8 mid:top-12 mid:right-5 z-10">
+    <ThemeContext.Provider value={theme}>
+      <button
+        onClick={toggleTheme}
+        className="fixed top-6 right-2 small:top-8 mid:top-12 mid:right-5 z-10"
+      >
         {theme === "dark" && (
           <div className="p-2 rounded-l hover:bg-gray-800">
-            <img src={sunImage} className="w-6 small:w-7"/>
+            <img src={sunImage} className="w-6 small:w-7" />
           </div>
         )}
         {theme === "light" && (
           <div className="p-2 rounded-l hover:bg-gray-300">
-            <img src={moonImage} className="w-6 small:w-7"/>
+            <img src={moonImage} className="w-6 small:w-7" />
           </div>
         )}
       </button>
       {children}
-    </>
+    </ThemeContext.Provider>
   );
 }
