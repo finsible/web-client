@@ -13,6 +13,7 @@ import CarouselCardInfo from "./CarouselCardInfo";
 import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import { useLocation } from "react-router";
 import { apiRequest } from "../utils/apiRequest";
+import { toast } from "react-toastify";
 
 export default function WelcomePage() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
@@ -118,6 +119,7 @@ export default function WelcomePage() {
     } catch (error) {
       // show something on UI
       window.location.href = "/";
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -135,6 +137,7 @@ export default function WelcomePage() {
       setAuthData(res.data);
     } catch (error) {
       setAuthData(null);
+      toast.error(error.message);
       // show something on UI
     } finally {
       setIsLoading(false);
