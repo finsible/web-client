@@ -1,20 +1,51 @@
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import WelcomePage from "./components/WelcomePage";
-import ThemeProvider from "./components/ThemeProvider";
-import { BrowserRouter } from "react-router-dom";
-import CustomToastContainer from "./components/ToastContainer";
+import ThemeProvider from "./hooks/ThemeProvider";
+import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+import WelcomePage from "./pages/WelcomePage";
+import NotFound from "./pages/NotFound";
+import Dashboard from "./Pages/Dashboard";
+import Transactions from "./pages/Transactions";
+import AuthProvider from "./hooks/AuthProvider";
+import { SidebarProvider } from "./hooks/SidebarProvider";
 
 function App() {
   return (
-    <BrowserRouter>
-      <GoogleOAuthProvider clientId="353640413518-5nqljv0ar8qn7k880qdtkodtamts26t9.apps.googleusercontent.com">
-        <div>
-          <CustomToastContainer/>
-          <WelcomePage />
+    <ThemeProvider>
+      <AuthProvider>
+        <SidebarProvider>
+          <div className="App">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<WelcomePage />} />
+              <Route path="/login" element={<WelcomePage />} />
+
+              {/* Protected routes */}
+
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/transactions"
+                element={
+                  <ProtectedRoute>
+                    <Transactions />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
           {/* Other components that might need Google OAuth */}
-        </div>
-      </GoogleOAuthProvider>
-    </BrowserRouter>
+        </SidebarProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

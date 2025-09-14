@@ -4,26 +4,29 @@ import leftArrowDark from "../assets/light/left_arrow_dark.svg";
 import rightArrowDark from "../assets/light/right_arrow_dark.svg";
 import rightArrowLight from "../assets/dark/right_arrow_light.svg";
 import { useState, useEffect, useRef } from "react";
-import Button from "./Button";
-import CarouselIndicators from "./Carouselndicators";
+import Button from "../components/Button";
+import CarouselIndicators from "../components/Carouselndicators";
 import slides from "../data/SlidesData";
-import BlurryBlobs from "./BlurryBlobs";
-import CarouselCardImage from "./CarouselCardImage";
-import CarouselCardInfo from "./CarouselCardInfo";
+import BlurryBlobs from "../components/BlurryBlobs";
+import CarouselCardImage from "../components/CarouselCardImage";
+import CarouselCardInfo from "../components/CarouselCardInfo";
 import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { apiRequest } from "../utils/apiRequest";
 import { toast } from "react-toastify";
+import { useAuthData } from "../hooks/AuthProvider";
+import { Loader } from "../components/Loader";
 
-export default function WelcomePage() {
+export default function WelcomePage({ children }) {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [cardInfoHeight, setCardInfoHeight] = useState(0);
-  const [authData, setAuthData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const authContext = useAuthData();
 
   const cardInfoRef = useRef(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const localhost = import.meta.env.VITE_LOCALHOST_URI;
 
@@ -33,6 +36,7 @@ export default function WelcomePage() {
     const authCode = urlParams.get("code");
 
     if (authCode !== null) {
+      setIsLoading(true);
       handleAuthCodeResponse(authCode);
     }
   }, [location.search]); // Trigger when URL search params change
@@ -65,6 +69,8 @@ export default function WelcomePage() {
     },
     use_fedcm_for_prompt: true,
     cancel_on_tap_outside: true,
+    scope:
+      "openid email profile https://www.googleapis.com/auth/userinfo.profile",
     disabled: activeCardIndex !== 3, // Only show on step 4
     callback: (response) => {
       setIsLoading(true); // ✅ Start loading immediately on click
@@ -81,6 +87,8 @@ export default function WelcomePage() {
     },
     ux_mode: "redirect",
     use_fedcm_for_button: true,
+    scope:
+      "openid email profile https://www.googleapis.com/auth/userinfo.profile",
     redirect_uri: localhost, // should be same here and in backend with redirect auth-code flow
     flow: "auth-code", // this is enabling in-window google email selection in chrome
     onNonOAuthError: (error) => {
@@ -109,16 +117,11 @@ export default function WelcomePage() {
         clientId: clientId,
       };
       var res = await apiRequest.postForm("auth/googleSignInWithCode", params);
-      setAuthData(res.data);
-      //console.log(res.data);
-      var authCookie = document.cookie.match("is_authenticated");
-      console.log(authCookie);
-      // Navigate to home or dashboard
-      window.location.href = "/";
-      // navigate('/dashboard');
+      authContext.login(res.data);
+      toast.success(res.message);
+      navigate("/dashboard");
     } catch (error) {
-      // show something on UI
-      window.location.href = "/";
+      authContext.clearAuthStates();
       toast.error(error.message);
     } finally {
       setIsLoading(false);
@@ -134,11 +137,12 @@ export default function WelcomePage() {
         token: credentialResponse.credential,
       };
       var res = await apiRequest.postForm("auth/googleSignIn", params);
-      setAuthData(res.data);
+      authContext.login(res.data);
+      toast.success(res.message);
+      navigate("/dashboard");
     } catch (error) {
-      setAuthData(null);
+      authContext.clearAuthStates();
       toast.error(error.message);
-      // show something on UI
     } finally {
       setIsLoading(false);
     }
@@ -151,8 +155,9 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="absolute inset-0 p-4 mid:p-8 overflow-hidden">
+    <div className={`absolute inset-0 p-4 mid:p-8 overflow-hidden ${isLoading?"opacity-90":""}`}>
       <BlurryBlobs />
+      <Loader isLoading={isLoading}/>
       <div className="h-full w-full p-1 mid:p-2 grid grid-cols-1 mid:grid-cols-2 grid-rows-[1fr_3.5fr_4fr] mid:grid-rows-[2fr_5fr_3fr] gap-1">
         {/* Name of the app - need to ass logo as well */}
         <div className="mid:col-span-2 font-eb-garamond text-size-lg small:text-size-sm text-onBackground">

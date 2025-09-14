@@ -2,6 +2,8 @@ export default function Button({
   // Content
   children,
   name,
+  isLucidIcon,
+  IconComponent,
   startIcon,
   endIcon,
   lightImage,
@@ -33,6 +35,7 @@ export default function Button({
       "bg-onBackground text-primaryButtonText border-onBackground border-1 hover:bg-onBackground/90",
     secondary:
       "bg/100 text-secondaryButtonText border-secondaryButtonBorder border-1.5 hover:bg-background/20",
+      sidebar:"bg-sidebar text-sidebar-text",
     outline:
       "bg-transparent text-onBackground border-outline hover:bg-background/10",
     ghost:
@@ -63,24 +66,33 @@ export default function Button({
     <button
       ref={ref}
       type={type}
-      onClick={()=>onClick()}
+      onClick={() => onClick()}
       disabled={isDisabled}
       className={isHidden ? "hidden" : finalClassName}
       aria-label={ariaLabel}
       {...rest}
     >
       {/* start icon */}
-      {startIcon && lightImage && (
+      {isLucidIcon && <IconComponent className={`text-onBackground`} />}
+      {!isLucidIcon && startIcon && lightImage && (
         <img src={lightImage} className="w-4 small:w-6 block dark:hidden"></img>
       )}
-      {startIcon && darkImage && (
+      {!isLucidIcon && startIcon && darkImage && (
         <img src={darkImage} className="w-4 small:w-6 hidden dark:block"></img>
       )}
 
       {/* Button Content */}
-      {name && <span className={loading ? "opacity-70" : "text-size-4xsm small:text-size-buttonText"}>{name}</span>}
+      {name && (
+        <span
+          className={
+            loading ? "opacity-70" : "text-size-4xsm small:text-size-buttonText"
+          }
+        >
+          {name}
+        </span>
+      )}
       {children && (
-        <span className={loading ? "opacity-70" : ""}>{children}</span>
+        <span className={loading ? "opacity-70" : "text-size-4xsm"}>{children}</span>
       )}
 
       {/* End Icon */}

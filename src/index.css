@@ -14,6 +14,7 @@
   --text-size-2xsm: 1.4rem;
   --text-size-3xsm: 1rem;
   --text-size-4xsm: 0.9rem;
+  --text-size-5xsm: 0.75rem;
 
   --breakpoint-mid: 900px;
   --breakpoint-small: 500px;
@@ -123,6 +124,17 @@
   --color-categoryBlue: #1565c0;
   --color-categoryGreen: #2e7d32;
   --color-categoryGray: #455a64;
+
+  --color-sidebar: #ffffff;
+  --color-sidebarBorder: #e5e7eb;
+  --color-sidebar-text: #374151;
+  --color-sidebar-text-secondary: #6b7280;
+  --color-sidebar-hover: #f3f4f6;
+  --color-sidebar-active-item-bg: #d4fec29a;
+  --color-sider-active-item-text: #047857;
+
+  --color-user-profile-bg: #f5f3f3;
+  --color-add-transaction-btn: #000000;
 }
 
 @layer base {
@@ -204,6 +216,18 @@
     --color-categoryBlue: #64b5f6;
     --color-categoryGreen: #81c784;
     --color-categoryGray: #b0bec5;
+
+    --color-sidebar: #0f1419;
+    --color-sidebarBorder: #1f2937;
+    --color-sidebar-text: #f9fafb;
+    --color-sidebar-text-secondary: #9ca3af;
+    --color-sidebar-hover: #1f2937;
+    --color-sidebar-active-item-bg: #164e637b;
+    --color-sider-active-item-text: #22d3ee;
+    --color-sidebar-active-item: #d4fec29a;
+
+    --color-user-profile-bg: #0a1e29;
+    --color-add-transaction-btn: #d1fdbfb4;
   }
 }
 
@@ -219,7 +243,8 @@
   color: var(--color-onSurface) !important;
   border: 1px solid var(--color-outline) !important;
   border-radius: 0.5rem !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
   font-size: var(--text-size-4xsm) !important;
   min-height: 64px !important;
   font-family: var(--font-outfit) !important;
