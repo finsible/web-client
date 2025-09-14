@@ -9,7 +9,7 @@ export default function CustomToastContainer() {
       newestOnTop
       closeOnClick={false}
       rtl={false}
-      pauseOnFocusLoss
+      pauseOnFocusLoss={false}
       draggable
       pauseOnHover
       transition={Slide}
