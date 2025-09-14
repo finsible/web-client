@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import sunImage from "../assets/Sun Vector Icon.svg";
-import moonImage from "../assets/Moon Vector Icon.svg";
+import { useLocation } from "react-router";
+import { Moon, Sun } from "lucide-react";
 
 const ThemeContext = createContext();
 
@@ -22,7 +22,9 @@ export default function ThemeProvider({ children }) {
       : "light";
   };
 
-  const [theme, setTheme] = useState(getInitialTheme);
+  const [theme, setTheme] = useState(getInitialTheme());
+  const location = useLocation();
+  const isLoginScreen = location.pathname === "" || location.pathname === "/login";
 
   // 2. Apply theme (to HTML) and save only if manually chosen
   useEffect(() => {
@@ -58,19 +60,19 @@ export default function ThemeProvider({ children }) {
   };
 
   return (
-    <ThemeContext.Provider value={theme}>
+    <ThemeContext.Provider value={{theme, isLoginScreen, toggleTheme}}>
       <button
         onClick={toggleTheme}
-        className="fixed top-6 right-2 small:top-8 mid:top-12 mid:right-5 z-10"
+        className={`fixed top-6 right-2 small:top-9 mid:top-12 mid:right-4 z-10 ${isLoginScreen?"":"hidden"}`}
       >
         {theme === "dark" && (
           <div className="p-2 rounded-l hover:bg-gray-800">
-            <img src={sunImage} className="w-6 small:w-7" />
+            <Sun className="text-onBackground"/>
           </div>
         )}
         {theme === "light" && (
           <div className="p-2 rounded-l hover:bg-gray-300">
-            <img src={moonImage} className="w-6 small:w-7" />
+            <Moon/>
           </div>
         )}
       </button>
