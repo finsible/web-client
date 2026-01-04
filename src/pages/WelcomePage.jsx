@@ -16,6 +16,7 @@ import { apiRequest } from "../utils/apiRequest";
 import { toast } from "react-toastify";
 import { useAuthData } from "../hooks/AuthProvider";
 import { Loader } from "../components/Loader";
+import { API_ENDPOINTS } from "../utils/apiEndpoints";
 
 export default function WelcomePage({ children }) {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
@@ -112,11 +113,16 @@ export default function WelcomePage({ children }) {
   async function handleAuthCodeResponse(authCode) {
     try {
       // sending to backend to authenticate and get JWT
-      const params = {
+      const body = {
         code: authCode,
         clientId: clientId,
+        defaultLanguageCode: "en",
+        defaultCurrencyCode: "INR",
       };
-      var res = await apiRequest.postForm("auth/googleSignInWithCode", params);
+      var res = await apiRequest.post(
+        API_ENDPOINTS.AUTH.SIGN_IN_GOOGLE_CODE,
+        body
+      );
       authContext.login(res.data);
       toast.success(res.message);
       navigate("/dashboard");
@@ -132,11 +138,13 @@ export default function WelcomePage({ children }) {
   async function handleCredentialResponse(credentialResponse) {
     try {
       setIsLoading(true);
-      const params = {
+      const body = {
         clientId: clientId,
         token: credentialResponse.credential,
+        defaultLanguageCode: "en",
+        defaultCurrencyCode: "INR",
       };
-      var res = await apiRequest.postForm("auth/googleSignIn", params);
+      var res = await apiRequest.post(API_ENDPOINTS.AUTH.SIGN_IN_GOOGLE, body);
       authContext.login(res.data);
       toast.success(res.message);
       navigate("/dashboard");
@@ -155,9 +163,13 @@ export default function WelcomePage({ children }) {
   };
 
   return (
-    <div className={`absolute inset-0 p-4 mid:p-8 overflow-hidden ${isLoading?"opacity-90":""}`}>
+    <div
+      className={`absolute inset-0 p-4 mid:p-8 overflow-hidden ${
+        isLoading ? "opacity-90" : ""
+      }`}
+    >
       <BlurryBlobs />
-      <Loader isLoading={isLoading}/>
+      <Loader isLoading={isLoading} />
       <div className="h-full w-full p-1 mid:p-2 grid grid-cols-1 mid:grid-cols-2 grid-rows-[1fr_3.5fr_4fr] mid:grid-rows-[2fr_5fr_3fr] gap-1">
         {/* Name of the app - need to ass logo as well */}
         <div className="mid:col-span-2 font-eb-garamond text-size-lg small:text-size-sm text-onBackground">

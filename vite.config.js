@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   server: {
     port: 5173,
-    host: 'localhost',
+    host: true,
     headers: {
       // 'Cross-Origin-Embedder-Policy': 'credentialless',
       // 'Cross-Origin-Opener-Policy': 'same-origin'

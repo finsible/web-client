@@ -8,6 +8,8 @@ import {
 import apiRequest from "../utils/apiRequest";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { AUTH_STATUS_EXPIRY_SECONDS } from "../../AppContants";
+import { API_ENDPOINTS } from "../utils/apiEndpoints";
 
 const AuthContext = createContext();
 const USER_DATA_KEY = "user_data";
@@ -46,6 +48,7 @@ export default function AuthProvider({ children }) {
       if (userData) {
         setAuthData(userData);
         setIsAuthenticated(true);
+        navigate("/dashboard");
       } else {
         // is auth cookie is true meaning user is authenticated but localstorage is not having data
         // we fetch from backend
@@ -89,6 +92,9 @@ export default function AuthProvider({ children }) {
         isNewUser: userData.isNewUser,
         accountCreated: userData.accountCreated,
         lastLoggedIn: userData.lastLoggedIn,
+        defaultCurrencySymbol: userData.defaultCurrencySymbol,
+        defaultCurrencyCode: userData.defaultCurrencyCode,
+        defaultLanguageCode: userData.defaultLanguageCode,
       };
 
       localStorage.setItem(USER_DATA_KEY, JSON.stringify(safeUserData));
@@ -107,19 +113,24 @@ export default function AuthProvider({ children }) {
     setIsAuthenticated(false);
     clearUserFromStorage();
     navigate("/login");
+    ``;
   };
 
   const logout = async () => {
     try {
       setIsLoading(true);
       // Call logout endpoint to clear HTTP-only cookie
-      const response = await apiRequest.post("auth/logout");
+      const response = await apiRequest.post(API_ENDPOINTS.AUTH.SIGN_OUT);
       toast.success(response.message);
+      navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
-      toast.success("Logged out");
+      // still want to redirect to login page?
+      toast.error("Could not Log out");
     } finally {
-      clearAuthStates();
+      // make the is_authenticated cookie false
+      // document.cookie = `is_authenticated=false; path=/; max-age=${AUTH_STATUS_EXPIRY_SECONDS}`;
+      // clearAuthStates();
       setIsLoading(false);
     }
   };
@@ -128,7 +139,7 @@ export default function AuthProvider({ children }) {
   const refreshUserFromBackend = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await apiRequest.get("auth/user");
+      const response = await apiRequest.get(API_ENDPOINTS.AUTH.ME);
       if (response.success) {
         const userData = response.data;
         setAuthData(userData);
