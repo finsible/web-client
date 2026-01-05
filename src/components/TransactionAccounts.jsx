@@ -1,0 +1,82 @@
+import { useAccounts } from "../hooks/useFinance";
+import { Type } from "../utils/Type";
+import { ChildElement } from "./TransactionCategories";
+
+export default function TransactionAccounts({
+  activeType,
+  fromAccount,
+  setFromAccount,
+  toAccount,
+  setToAccount,
+}) {
+  const { data: accounts, isLoading } = useAccounts();
+
+  const showFrom = activeType === Type.EXPENSE || activeType === Type.TRANSFER;
+  const showTo = activeType === Type.INCOME || activeType === Type.TRANSFER;
+
+  return (
+    <div className="flex-1 overflow-auto no-scrollbar flex flex-col gap-6">
+      {isLoading ? (
+        <div className="text-center text-onBackground mt-8">
+          Loading accounts...
+        </div>
+      ) : (
+        <>
+          {showFrom && (
+            <div className="flex flex-col gap-2 bg-background rounded-xl p-3">
+              <div className="text-onSurfaceVariant text-size-3xsm font-medium">
+                {activeType === Type.TRANSFER ? "From Account" : "Pay From"}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {accounts
+                  ?.filter(
+                    (a) =>
+                      !toAccount ||
+                      a.id !== toAccount.id ||
+                      a.linkedBankAccountId != toAccount.id ||
+                      a.id != toAccount.linkedBankAccountId
+                  )
+                  .map((account) => (
+                    <ChildElement
+                      key={account.id}
+                      name={account.name}
+                      isActive={fromAccount?.id === account.id}
+                      onClick={() => setFromAccount(account)}
+                      type={activeType}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {showTo && (
+            <div className="flex flex-col gap-2 bg-background rounded-xl p-3">
+              <div className="text-onSurfaceVariant text-size-3xsm font-medium">
+                {activeType === Type.TRANSFER ? "To Account" : "Deposit To"}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {accounts
+                  ?.filter(
+                    (a) =>
+                      !fromAccount ||
+                      (a.id !== fromAccount.id &&
+                        a.linkedBankAccountId != fromAccount.id &&
+                        a.id != fromAccount.linkedBankAccountId)
+                  )
+                  .map((account) => (
+                    <ChildElement
+                      key={account.id}
+                      name={account.name}
+                      isActive={toAccount?.id === account.id}
+                      onClick={() => setToAccount(account)}
+                      type={activeType}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}

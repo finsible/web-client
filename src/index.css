@@ -23,6 +23,52 @@
   --animate-blob-medium: blob 10s linear infinite alternate-reverse;
   --animate-blob-fast: blob 7s linear infinite alternate;
 
+  /* Popup animations */
+  --animate-popup-open: popup-open 0.2s linear forwards;
+  --animate-popup-close: popup-close 0.2s linear forwards;
+  --animate-popup-open-mobile: popup-open-mobile 0.3s ease-out forwards;
+  --animate-popup-close-mobile: popup-close-mobile 0.3s ease-in forwards;
+
+  @keyframes popup-open {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes popup-close {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+
+  @keyframes popup-open-mobile {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes popup-close-mobile {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
   @keyframes blob {
     0% {
       transform: translate(0px, 0px) scale(1);
@@ -135,6 +181,8 @@
 
   --color-user-profile-bg: #f5f3f3;
   --color-add-transaction-btn: #000000;
+  --color-secondaryText: #8e9191;
+  --color-brandAccent: #2E8B57;
 }
 
 @layer base {
@@ -228,6 +276,9 @@
 
     --color-user-profile-bg: #0a1e29;
     --color-add-transaction-btn: #d1fdbfb4;
+
+    --color-secondaryText: #8e9191;
+    --color-brandAccent: #5BB95E;
   }
 }
 
@@ -293,4 +344,14 @@
 
 .Toastify__toast--info .Toastify__toast-icon {
   color: var(--color-primary) !important;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
