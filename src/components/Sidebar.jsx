@@ -18,12 +18,17 @@ import {
   ChevronUp,
   ChevronDown,
   CalendarPlus2,
+  PiggyBank,
+  Plus,
 } from "lucide-react";
 import SidebarNavItem from "./SidebarNavItem";
 import { useState } from "react";
 import { Link } from "react-router";
 
-export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
+export default function Sidebar({
+  isTransactionPopup,
+  handleTransactionPopup,
+}) {
   const [isEmailVisible, setIsEmailVisible] = useState(false);
   const { isOpen, isMobile, toggle } = useSidebar();
   const authContext = useAuthData();
@@ -48,13 +53,13 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
                 isOpen ? "w-70" : "w-18"
               }`
         }
-        transition-all duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)]
+        transition-all duration-300 ease-in-out
         shadow-lg border-1 border-sidebarBorder
       `}
       >
         {/* Header */}
         {!isMobile && (
-          <div className={`flex-shrink-0 ${isOpen ? "p-2" : ""}`}>
+          <div className={`shrink-0 ${isOpen ? "p-2" : ""}`}>
             <div
               className={`flex items-center ${
                 !isOpen ? "justify-center" : "justify-between"
@@ -75,7 +80,7 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
                 </span>
                 <span className="hidden dark:inline">
                   <img
-                    className={`flex-shrink-0 ${
+                    className={`shrink-0 ${
                       isOpen ? "w-11 h-11" : "w-14 h-14 mb-2"
                     }`}
                     src={app_logo_light}
@@ -104,7 +109,7 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
           `}
               >
                 <img
-                  className={`flex-shrink-0 rounded-full border-2 border-container ${
+                  className={`shrink-0 rounded-full border-2 border-container ${
                     isOpen ? "w-12 h-12" : "w-11 h-11"
                   }`}
                   src={userData?.picture}
@@ -156,7 +161,7 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
           <button
             className={`absolute p-0.5 border-1 border-background ${
               isOpen ? "left-66" : "left-15"
-            } bg-onBackground rounded-2xl z-100 top-1/2 text-center transition-all duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)]`}
+            } bg-onBackground rounded-2xl z-100 top-1/2 text-center transition-all duration-300 ease-in-out`}
             onClick={toggle}
           >
             <ChevronRight
@@ -172,27 +177,12 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
 
         {/* Navigation */}
         <div
-          className={`${
+          className={`z-100 ${
             isMobile
-              ? "grid grid-cols-4 h-full px-2"
+              ? "flex items-center justify-around h-full"
               : "flex flex-col flex-1 space-y-2"
           }`}
         >
-          <div
-            className={`cursor-pointer bg-primary rounded-lg ${
-              !isOpen ? "flex justify-center mt-8 mb-4 p-3" : "p-3 mb-8 w-45"
-            }`}
-            onClick={() => setIsTransactionPopup(true)}
-          >
-            {isOpen ? (
-              <div className="flex gap-3">
-                <CalendarPlus2 className="text-background" />
-                <span className="text-background">Add Transaction</span>
-              </div>
-            ) : (
-              <CalendarPlus2 className="text-background" />
-            )}
-          </div>
           <SidebarNavItem
             isOpen={isOpen}
             isMobile={isMobile}
@@ -202,6 +192,23 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
             itemName="Dashboard"
             IconComponent={Home}
           />
+          <SidebarNavItem
+            isOpen={isOpen}
+            isMobile={isMobile}
+            path="/accounts"
+            mainProps={{ to: "/accounts" }}
+            MainComponenet={Link}
+            itemName="Accounts"
+            IconComponent={PiggyBank}
+          />
+          {isMobile && (
+            <div
+              className="h-12 w-12 rounded-4xl bg-onBackground flex justify-center items-center shrink-0"
+              onClick={() => handleTransactionPopup(true)}
+            >
+              <Plus className="text-sidebar" />
+            </div>
+          )}
           <SidebarNavItem
             isMobile={isMobile}
             isOpen={isOpen}
@@ -221,7 +228,7 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
             IconComponent={Settings}
           />
 
-          {isMobile && (
+          {/* {isMobile && (
             <div className="flex flex-col items-center justify-center p-2">
               <img
                 className="w-7 h-7 rounded-full border border-container"
@@ -236,7 +243,7 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
                 Profile
               </span>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* theme and Logout Button */}
@@ -244,7 +251,7 @@ export default function Sidebar({ isTransactionPopup, setIsTransactionPopup }) {
           <div>
             <hr className="text-container my-4"></hr>
             <div
-              className={`flex flex-col gap-5 flex-shrink-0 ${
+              className={`flex flex-col gap-5 shrink-0 ${
                 isOpen ? "p-2" : ""
               }`}
             >

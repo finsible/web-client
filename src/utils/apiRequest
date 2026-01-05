@@ -68,7 +68,10 @@ apiClient.interceptors.response.use(
   }
 );
 
-function handleAuthError() {}
+function handleAuthError() {
+  // todo : redirect to login page
+
+}
 
 // Main API request function
 export const apiRequest = {

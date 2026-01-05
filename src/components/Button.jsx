@@ -32,14 +32,13 @@ export default function Button({
   // Variant styles
   const variants = {
     primary:
-      "bg-onBackground text-primaryButtonText border-onBackground border-1 hover:bg-onBackground/90",
-    secondary:
-      "bg/100 text-secondaryButtonText border-secondaryButtonBorder border-1.5 hover:bg-background/20",
-      sidebar:"bg-sidebar text-sidebar-text",
+      "bg-onBackground border border-solid text-primaryButtonText border-onBackground border-1 hover:bg-onBackground/90",
+    secondary: "bg/100 border border-solid text-secondaryButtonText hover:bg-background/20",
+    sidebar: "bg-sidebar text-sidebar-text",
     outline:
-      "bg-transparent text-onBackground border-outline hover:bg-background/10",
+      "bg-transparent text-onBackground border border-solid border-outline hover:bg-background/10",
     ghost:
-      "bg-transparent text-onBackground border-transparent hover:bg-background/10 focus:ring-onBackground/10",
+      "bg-transparent text-secondaryText hover:bg-background/10 focus:ring-onBackground/10",
     destructive:
       "bg-red-600 text-white border-red-600 hover:bg-red-700 focus:ring-red-500/20",
     success:
@@ -50,7 +49,7 @@ export default function Button({
   const finalClassName = `
     px-4 text-size-3xsm small:text-size-buttonText gap-2 small:gap-4 rounded-xs
     inline-flex items-center justify-center py-2 cursor-pointer
-    border border-solid transition-all duration-200 ease-in-out
+     transition-all duration-200 ease-in-out
     disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none
     ${variants[variant]}
     ${fullWidth ? "w-full" : ""}
@@ -92,7 +91,9 @@ export default function Button({
         </span>
       )}
       {children && (
-        <span className={loading ? "opacity-70" : "text-size-4xsm"}>{children}</span>
+        <span className={loading ? "opacity-70" : "text-size-4xsm"}>
+          {children}
+        </span>
       )}
 
       {/* End Icon */}

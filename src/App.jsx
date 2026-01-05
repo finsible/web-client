@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import WelcomePage from "./pages/WelcomePage";
 import NotFound from "./pages/NotFound";
-import Dashboard from "./Pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
+import Accounts from "./pages/Accounts";
 import Transactions from "./pages/Transactions";
 import AuthProvider from "./hooks/AuthProvider";
 import { SidebarProvider } from "./hooks/SidebarProvider";
@@ -26,6 +27,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              
+              <Route
+                path="/accounts"
+                element={
+                  <ProtectedRoute>
+                    <Accounts />
                   </ProtectedRoute>
                 }
               />
