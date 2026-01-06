@@ -53,7 +53,7 @@ export default function TransactionAmountInput({ amount, setAmount }) {
 
           // Permit transitional zero (e.g., "0.0", "0.00") so user can keep typing; reject if it stays zero without more digits
           if (numericValue === 0) {
-            setAmount(0);
+            setAmount(normalized);
             return;
           }
 

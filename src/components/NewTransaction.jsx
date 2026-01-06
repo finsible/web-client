@@ -64,7 +64,7 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
   };
 
   const isNextDisabled = () => {
-    if (stepCount === 1) return amount === "" || amount == 0;
+    if (stepCount === 1) return amount === "" || parseFloat(amount) === 0 || isNaN(parseFloat(amount));
     if (stepCount === 3) return !selectedCategory;
     if (stepCount === 4) {
       if (activeType === Type.EXPENSE) return !fromAccount;
@@ -153,7 +153,8 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
         toast.success(res.message);
       },
       onError: (error) => {
-        toast.error(error.message);
+        const errorMessage = error?.message || "Failed to create transaction";
+        toast.error(errorMessage);
         console.error("Failed to create transaction", error);
       },
     });
@@ -199,7 +200,7 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
       <div className={`my-1 mx-4 flex gap-2 shrink-0`}>
         <Button
           onClick={() => setStepCount(stepCount - 1)}
-          isHidden={stepCount == 1}
+          isHidden={stepCount === 1}
           className="flex-1/4"
           variant="ghost"
         >

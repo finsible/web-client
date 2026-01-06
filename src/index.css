@@ -28,61 +28,6 @@
   --animate-popup-close: popup-close 0.2s linear forwards;
   --animate-popup-open-mobile: popup-open-mobile 0.3s ease-out forwards;
   --animate-popup-close-mobile: popup-close-mobile 0.3s ease-in forwards;
-
-  @keyframes popup-open {
-    0% {
-      opacity: 0;
-      transform: scale(0.3);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes popup-close {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.3);
-    }
-  }
-
-  @keyframes popup-open-mobile {
-    0% {
-      transform: translateY(100%);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes popup-close-mobile {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(100%);
-    }
-  }
-
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(10px, -10px) scale(1.5);
-    }
-    66% {
-      transform: translate(-10px, 10px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-  }
 }
 
 @layer base {
@@ -182,7 +127,7 @@
   --color-user-profile-bg: #f5f3f3;
   --color-add-transaction-btn: #000000;
   --color-secondaryText: #8e9191;
-  --color-brandAccent: #2E8B57;
+  --color-brandAccent: #2e8b57;
 }
 
 @layer base {
@@ -278,9 +223,64 @@
     --color-add-transaction-btn: #d1fdbfb4;
 
     --color-secondaryText: #8e9191;
-    --color-brandAccent: #5BB95E;
+    --color-brandAccent: #5bb95e;
   }
 }
+
+@keyframes popup-open {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes popup-close {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+
+  @keyframes popup-open-mobile {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes popup-close-mobile {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(10px, -10px) scale(1.5);
+    }
+    66% {
+      transform: translate(-10px, 10px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
 
 /* Use your existing Tailwind v4 theme colors for toasts */
 /* Override react-toastify styles */
@@ -344,6 +344,24 @@
 
 .Toastify__toast--info .Toastify__toast-icon {
   color: var(--color-primary) !important;
+}
+
+/* Mobile responsive toast - top positioned like notifications */
+@media (max-width: 768px) {
+  .Toastify__toast-container {
+    width: auto !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    bottom: auto !important;
+    top: 1rem !important;
+    transform: none !important;
+  }
+
+  .Toastify__toast {
+    margin-right: 0 !important;
+    margin-bottom: 0.5rem !important;
+    border-radius: 0.75rem !important;
+  }
 }
 
 @layer utilities {
