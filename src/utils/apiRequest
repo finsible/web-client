@@ -70,7 +70,6 @@ apiClient.interceptors.response.use(
 
 function handleAuthError() {
   // todo : redirect to login page
-
 }
 
 // Main API request function
@@ -182,7 +181,8 @@ const handleApiError = (error) => {
 
   // Add user-friendly messages --> not needed if backend message is proper apart from network error case
   if (apiError.isNetworkError) {
-    apiError.message = "Network error. Please check your connection.";
+    apiError.message =
+      "Unable to connect. Please check your internet connection or try again later.";
   }
 
   return apiError;
