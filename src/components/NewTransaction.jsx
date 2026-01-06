@@ -64,7 +64,8 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
   };
 
   const isNextDisabled = () => {
-    if (stepCount === 1) return amount === "" || parseFloat(amount) === 0 || isNaN(parseFloat(amount));
+    if (stepCount === 1)
+      return !amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0;
     if (stepCount === 3) return !selectedCategory;
     if (stepCount === 4) {
       if (activeType === Type.EXPENSE) return !fromAccount;
@@ -102,6 +103,9 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
         setActiveType,
         selectedCategory,
         setSelectedCategory,
+        setFromAccount,
+        toAccount,
+        setToAccount,
       },
     },
     {
@@ -129,11 +133,16 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
       setStepCount(stepCount + 1);
       return;
     }
+    if (!(selectedDate instanceof Date) || Number.isNaN(selectedDate.getTime())) {
+      toast.error("Please select a valid date before continuing.");
+      return;
+    }
+    const transactionDateMs = selectedDate.getTime();
 
     const payload = {
       type: activeType,
       totalAmount: amount,
-      transactionDate: selectedDate.getTime(),
+      transactionDate: transactionDateMs,
       categoryId: selectedCategory?.id,
       description: description,
     };
@@ -174,11 +183,14 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
       style={{ transformOrigin: isMobile ? "bottom center" : "bottom right" }}
     >
       <div className="flex items-center justify-center gap-2 m-4 shrink-0">
-        <X
-          size={`${isMobile ? 15 : 18}`}
-          className="text-outlineVariant"
+        <button
+          type="button"
+          aria-label="Close new transaction dialog"
           onClick={() => handleTransactionPopup(false)}
-        />
+          className="text-outlineVariant"
+        >
+          <X size={`${isMobile ? 15 : 18}`} />
+        </button>
         <span className="text-onBackground flex-1 text-center">
           New Transaction
         </span>

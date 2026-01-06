@@ -6,12 +6,13 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { BrowserRouter } from "react-router";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { STALE_TIME_LONG } from "../AppContants.js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 0,
-      staleTime: 5 * 60 * 1000,
+      staleTime: STALE_TIME_LONG,
       refetchOnWindowFocus: false,
     },
     mutations: {

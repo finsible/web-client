@@ -25,6 +25,16 @@ export default function TransactionAccounts({
     }
   }, [isError, errorMessage]);
 
+  // Helper function to filter out linked accounts to prevent invalid transfers
+  const filterExcludingLinkedAccounts = (account, excludedAccount) => {
+    if (!excludedAccount) return true;
+    return (
+      account.id !== excludedAccount.id &&
+      account.linkedBankAccountId !== excludedAccount.id &&
+      account.id !== excludedAccount.linkedBankAccountId
+    );
+  };
+
   const accountsListElement = (
     <>
       {showFrom && (
@@ -34,12 +44,8 @@ export default function TransactionAccounts({
           </div>
           <div className="flex flex-wrap gap-2">
             {accounts
-              ?.filter(
-                (a) =>
-                  !toAccount ||
-                  (a.id !== toAccount.id &&
-                    a.linkedBankAccountId !== toAccount.id &&
-                    a.id !== toAccount.linkedBankAccountId)
+              ?.filter((account) =>
+                filterExcludingLinkedAccounts(account, toAccount)
               )
               .map((account) => (
                 <ChildElement
@@ -61,12 +67,8 @@ export default function TransactionAccounts({
           </div>
           <div className="flex flex-wrap gap-2">
             {accounts
-              ?.filter(
-                (a) =>
-                  !fromAccount ||
-                  (a.id !== fromAccount.id &&
-                    a.linkedBankAccountId !== fromAccount.id &&
-                    a.id !== fromAccount.linkedBankAccountId)
+              ?.filter((account) =>
+                filterExcludingLinkedAccounts(account, fromAccount)
               )
               .map((account) => (
                 <ChildElement

@@ -1,5 +1,26 @@
 import { useAuthData } from "../hooks/AuthProvider";
 
+// Helper function to normalize decimal input by removing leading zeros
+// while preserving the ability to type decimal points
+const normalizeDecimalInput = (intPart, fracPart, hasDot) => {
+  // Remove leading zeros but keep at least one digit before decimal
+  const normalizedInt = intPart.replace(/^0+(?=\d)/, "");
+  const safeInt = normalizedInt === "" ? "0" : normalizedInt;
+
+  if (!hasDot) {
+    return safeInt;
+  }
+
+  // Handle decimal point cases:
+  // - "5." -> keep the trailing dot so user can continue typing
+  // - "5" with dot but no fracPart -> just the dot
+  // - "5.25" -> include dot and fractional part
+  const decimalPart =
+    fracPart === "" && hasDot ? "." : fracPart === "" ? "" : `.${fracPart}`;
+
+  return `${safeInt}${decimalPart}`;
+};
+
 export default function TransactionAmountInput({ amount, setAmount }) {
   const { authData } = useAuthData();
   const currencySymbol = authData?.defaultCurrencySymbol || "";
@@ -23,19 +44,8 @@ export default function TransactionAmountInput({ amount, setAmount }) {
           // Enforce max lengths: 15 before decimal, 4 after decimal
           if (intPart.length > 15 || fracPart.length > 4) return;
 
-          // Normalize leading zeros but keep ability to type decimals
-          const normalizedInt = intPart.replace(/^0+(?=\d)/, "");
-          const safeInt = normalizedInt === "" ? "0" : normalizedInt;
           const hasDot = raw.includes(".");
-          const normalized = hasDot
-            ? `${safeInt}${
-                raw.endsWith(".") && fracPart === ""
-                  ? "."
-                  : fracPart === ""
-                  ? ""
-                  : "."
-              }${fracPart}`
-            : safeInt;
+          const normalized = normalizeDecimalInput(intPart, fracPart, hasDot);
 
           // Allow empty/zero states while typing so the user can reach values like 0.001
           if (normalized === "" || normalized === "0") {
@@ -74,10 +84,11 @@ export default function TransactionAmountInput({ amount, setAmount }) {
         }}
         className="w-full h-30 mt-2 p-4 rounded-xl text-size-sm bg-background text-onBackground text-center focus:outline-none"
         aria-label="Transaction amount"
+        autoFocus
       />
 
       <div className="text-secondaryText text-center m-5 mb-6">
-        {amount == "" || amount == 0
+        {amount === "" || amount === 0
           ? "Enter transaction amount"
           : currencySymbol + amount}
       </div>

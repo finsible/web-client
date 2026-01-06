@@ -38,7 +38,6 @@ export default function PageLayout({ children }) {
         isTransactionPopup={isTransactionPopup}
         handleTransactionPopup={handleTransactionPopup}
       />
-      {/* {isTransactionPopup && <NewTransaction/>} */}
       <main
         className={`
         transition-all duration-300 ease-in-out h-full

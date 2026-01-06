@@ -1,9 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../utils/apiRequest";
 import { API_ENDPOINTS } from "../utils/apiEndpoints";
-
-// --- Constants ---
-const STALE_TIME_LONG = 5 * 60 * 1000; // 5 minutes
+import { STALE_TIME_LONG } from "../../AppContants";
 
 // --- Keys ---
 export const QUERY_KEYS = {

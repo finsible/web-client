@@ -9,33 +9,19 @@ export default function TransactionCategories({
   setActiveType,
   selectedCategory,
   setSelectedCategory,
+  setFromAccount,
+  toAccount,
+  setToAccount,
 }) {
   const {
-    data: income_categories,
-    isLoading: isLoading1,
-    isError: isError1,
-    error: error1,
-  } = useCategories(Type.INCOME);
-  const {
-    data: expense_categories,
-    isLoading: isLoading2,
-    isError: isError2,
-    error: error2,
-  } = useCategories(Type.EXPENSE);
-  const {
-    data: transfer_categories,
-    isLoading: isLoading3,
-    isError: isError3,
-    error: error3,
-  } = useCategories(Type.TRANSFER);
+    data: categories,
+    isLoading,
+    isError,
+    error,
+  } = useCategories(activeType);
 
   // as per current flow this will execute everytime since we are unmounting it while moving to other steps and mouting it again when its step 3 hence while its mounted for the first time, useMemo is always executed
   const activeCategories = useMemo(() => {
-    let categories = [];
-    if (activeType === Type.INCOME) categories = income_categories;
-    else if (activeType === Type.EXPENSE) categories = expense_categories;
-    else if (activeType === Type.TRANSFER) categories = transfer_categories;
-
     if (!categories) return [];
 
     const map = {};
@@ -58,7 +44,7 @@ export default function TransactionCategories({
     });
 
     return roots;
-  }, [activeType, income_categories, expense_categories, transfer_categories]);
+  }, [categories]);
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
@@ -67,32 +53,12 @@ export default function TransactionCategories({
   function handleCategoryTypeClick(type) {
     setActiveType(type);
     setSelectedCategory(null);
+    setFromAccount(null);
+    setToAccount(null);
   }
 
-  const isLoading =
-    activeType === Type.INCOME
-      ? isLoading1
-      : activeType === Type.EXPENSE
-      ? isLoading2
-      : isLoading3;
-
-  const isError =
-    activeType === Type.INCOME
-      ? isError1
-      : activeType === Type.EXPENSE
-      ? isError2
-      : isError3;
-
-  const currentError =
-    activeType === Type.INCOME
-      ? error1
-      : activeType === Type.EXPENSE
-      ? error2
-      : error3;
-
   const errorMessage =
-    currentError?.message ||
-    "Not able to fetch the categories. Please try again.";
+    error?.message || "Not able to fetch the categories. Please try again.";
 
   useEffect(() => {
     if (isError) {
@@ -210,7 +176,9 @@ export default function TransactionCategories({
           Loading categories...
         </div>
       ) : isError ? (
-        <div className="text-center text-size-4xsm text-red-400 mt-8">{errorMessage}</div>
+        <div className="text-center text-size-4xsm text-red-400 mt-8">
+          {errorMessage}
+        </div>
       ) : (
         categoriesList
       )}
@@ -248,12 +216,6 @@ export function ChildElement({ type, isActive, name, ...rest }) {
         </div>
         <span className="text-sm whitespace-nowrap">{name}</span>
       </div>
-      {/* {isActive && (
-        <Check
-          size={14}
-          className={isExpense ? "text-red-400" : "text-green-400"}
-        />
-      )} */}
     </div>
   );
 }
