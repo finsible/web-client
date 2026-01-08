@@ -26,8 +26,10 @@
   /* Popup animations */
   --animate-popup-open: popup-open 0.2s linear forwards;
   --animate-popup-close: popup-close 0.2s linear forwards;
-  --animate-popup-open-mobile: popup-open-mobile 0.3s ease-out forwards;
-  --animate-popup-close-mobile: popup-close-mobile 0.3s ease-in forwards;
+  --animate-popup-open-mobile: popup-open-mobile 0.3s
+    cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  --animate-popup-close-mobile: popup-close-mobile 0.25s
+    cubic-bezier(0.32, 0, 0.67, 0) forwards;
 }
 
 @layer base {
@@ -228,59 +230,59 @@
 }
 
 @keyframes popup-open {
-    0% {
-      opacity: 0;
-      transform: scale(0.3);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
   }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
-  @keyframes popup-close {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.3);
-    }
+@keyframes popup-close {
+  0% {
+    opacity: 1;
+    transform: scale(1);
   }
+  100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
 
-  @keyframes popup-open-mobile {
-    0% {
-      transform: translateY(100%);
-    }
-    100% {
-      transform: translateY(0);
-    }
+@keyframes popup-open-mobile {
+  from {
+    transform: translate3d(0, 100%, 0);
   }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
 
-  @keyframes popup-close-mobile {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(100%);
-    }
+@keyframes popup-close-mobile {
+  from {
+    transform: translate3d(0, 0, 0);
   }
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
+}
 
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(10px, -10px) scale(1.5);
-    }
-    66% {
-      transform: translate(-10px, 10px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
   }
+  33% {
+    transform: translate(10px, -10px) scale(1.5);
+  }
+  66% {
+    transform: translate(-10px, 10px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
 
 /* Use your existing Tailwind v4 theme colors for toasts */
 /* Override react-toastify styles */
