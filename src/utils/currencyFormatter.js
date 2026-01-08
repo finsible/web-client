@@ -23,7 +23,7 @@ export const toReadableCurrency = (value, currencySymbol = "") => {
 
     // Handle invalid numbers
     if (!isFinite(numValue) || isNaN(numValue)) {
-      return value.toString();
+      return "0";
     }
 
     const absoluteValue = Math.abs(numValue);
@@ -57,6 +57,6 @@ export const toReadableCurrency = (value, currencySymbol = "") => {
     return `${sign}${currencySymbol}${formatted}`;
   } catch (error) {
     // Fallback to original value if formatting fails
-    return value.toString();
+    return "0";
   }
 };
