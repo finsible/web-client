@@ -1,4 +1,5 @@
 import { useAuthData } from "../hooks/AuthProvider";
+import { toReadableCurrency } from "../utils/currencyFormatter";
 
 // Helper function to normalize decimal input by removing leading zeros
 // while preserving the ability to type decimal points
@@ -90,7 +91,7 @@ export default function TransactionAmountInput({ amount, setAmount }) {
       <div className="text-secondaryText text-center m-5 mb-6">
         {amount === "" || amount === 0
           ? "Enter transaction amount"
-          : currencySymbol + amount}
+          : toReadableCurrency(amount, currencySymbol)}
       </div>
     </div>
   );

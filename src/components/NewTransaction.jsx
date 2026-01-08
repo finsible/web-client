@@ -133,7 +133,10 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
       setStepCount(stepCount + 1);
       return;
     }
-    if (!(selectedDate instanceof Date) || Number.isNaN(selectedDate.getTime())) {
+    if (
+      !(selectedDate instanceof Date) ||
+      Number.isNaN(selectedDate.getTime())
+    ) {
       toast.error("Please select a valid date before continuing.");
       return;
     }
@@ -236,8 +239,8 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
   // For mobile, wrap with overflow-hidden container to clip the slide animation
   if (isMobile) {
     return (
-      <div className="fixed inset-0 bottom-16 top-5 overflow-hidden">
-        {popupContent}
+      <div className="fixed inset-x-0 bottom-16 top-0 overflow-hidden">
+        <div className="absolute inset-x-0 bottom-0 top-5">{popupContent}</div>
       </div>
     );
   }
