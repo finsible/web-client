@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSidebar } from "../hooks/SidebarProvider";
 import Sidebar from "./Sidebar";
 import { NewTransaction } from "./NewTransaction";
-import { CalendarPlus2 } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function PageLayout({ children }) {
   const { isOpen, isMobile } = useSidebar();
@@ -12,7 +12,7 @@ export default function PageLayout({ children }) {
   // Calculate main content margin based on sidebar state
   const getMainContentMargin = () => {
     if (isMobile) {
-      return "mb-16"; // No margin on mobile
+      return "pb-14"; // Padding-bottom on mobile to clear fixed navbar
     }
     return isOpen ? "ml-70" : "ml-18";
   };
@@ -54,10 +54,10 @@ export default function PageLayout({ children }) {
         {children}
         {!isMobile && !isTransactionPopup && (
           <div
-            className="cursor-pointer bg-primary rounded-lg fixed p-3 bottom-6 right-6"
+            className={`cursor-pointer bg-primary opacity-60 hover:opacity-100 rounded-4xl fixed p-3 bottom-6 right-6 z-100`}
             onClick={() => handleTransactionPopup(true)}
           >
-            <CalendarPlus2 className="text-background" size={30} />
+            <Plus className="text-background font-bold" size={25} />
           </div>
         )}
       </main>

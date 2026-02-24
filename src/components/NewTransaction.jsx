@@ -15,7 +15,7 @@ const StepLayout = ({ title, step, totalSteps, children }) => {
   const safeTotal = totalSteps || 1;
   const progress = Math.min(
     100,
-    Math.max(0, Math.round((step / safeTotal) * 100))
+    Math.max(0, Math.round((step / safeTotal) * 100)),
   );
 
   return (
@@ -239,7 +239,7 @@ export function NewTransaction({ handleTransactionPopup, isClosing = false }) {
   // For mobile, wrap with overflow-hidden container to clip the slide animation
   if (isMobile) {
     return (
-      <div className="fixed inset-x-0 bottom-16 top-0 overflow-hidden">
+      <div className="fixed inset-x-0 bottom-16 top-0 overflow-hidden z-50 animate-backdrop-fade-in">
         <div className="absolute inset-x-0 bottom-0 top-5">{popupContent}</div>
       </div>
     );

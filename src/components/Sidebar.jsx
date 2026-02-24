@@ -80,9 +80,7 @@ export default function Sidebar({
                 </span>
                 <span className="hidden dark:inline">
                   <img
-                    className={`shrink-0 ${
-                      isOpen ? "w-11 h-11" : "w-14 h-14 mb-2"
-                    }`}
+                    className={`w-11 h-11 my-2`}
                     src={app_logo_light}
                     alt="App logo"
                   />

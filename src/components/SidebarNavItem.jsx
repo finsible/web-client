@@ -32,7 +32,7 @@ export default function SidebarNavItem({
       onClick={onClick}
     >
       <IconComponent
-        strokeWidth={1}
+        strokeWidth={isMobile?1:2}
         // fill={`${path && isActiveRoute(path) && isMobile ? "white" : "none"}`}
         className={`
             ${isMobile ? "text-size-4xsm mt-1" : ""}
