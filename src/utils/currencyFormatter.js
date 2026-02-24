@@ -60,3 +60,34 @@ export const toReadableCurrency = (value, currencySymbol = "") => {
     return "0";
   }
 };
+
+/**
+ * Formats a number to Indian currency format with commas and decimals (no suffixes)
+ * Example: 12000 -> "12,000.00", 150980 -> "1,50,980.00"
+ *
+ * @param {string|number} value - The amount to format
+ * @param {string} currencySymbol - Currency symbol (e.g., "₹", "$")
+ * @returns {string} Formatted currency string
+ */
+export const toCommaSeparatedCurrency = (value, currencySymbol = "") => {
+  try {
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
+
+    // Handle invalid numbers
+    if (!isFinite(numValue) || isNaN(numValue)) {
+      return "0.00";
+    }
+
+    const sign = numValue < 0 ? "-" : "";
+    const absoluteValue = Math.abs(numValue);
+
+    const formatted = new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(absoluteValue);
+
+    return `${sign}${currencySymbol}${formatted}`;
+  } catch (error) {
+    return "0.00";
+  }
+};
