@@ -31,7 +31,7 @@ export const toReadableCurrency = (value, currencySymbol = "") => {
 
     // Find the appropriate threshold
     const threshold = INDIAN_CURRENCY_THRESHOLDS.find(
-      (t) => absoluteValue >= t.value
+      (t) => absoluteValue >= t.value,
     );
 
     if (threshold) {
@@ -88,6 +88,6 @@ export const toCommaSeparatedCurrency = (value, currencySymbol = "") => {
 
     return `${sign}${currencySymbol}${formatted}`;
   } catch (error) {
-    return "0.00";
+    return `${sign}${currencySymbol}0.00`;
   }
 };

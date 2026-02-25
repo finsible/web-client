@@ -65,7 +65,7 @@ export default function Accounts() {
     if (isError) {
       toast.error(errorMessage);
     }
-  }, [isError1, isError2, errorMessage]);
+  }, [isError, errorMessage]);
 
   // Calculate financial summary
   const financialSummary = useMemo(() => {
@@ -192,7 +192,7 @@ export default function Accounts() {
         <h1
           className={`text-onBackground ${
             isMobile ? "text-size-2xsm" : "text-size-xs"
-          } font-semibold"`}
+          } font-semibold`}
         >
           My Accounts
         </h1>
@@ -357,6 +357,7 @@ function SummaryCard({
     assets: "bg-gradient-to-r from-assetsGradientStart to-assetsGradientEnd",
     liabilities:
       "bg-gradient-to-r from-liabilitiesGradientStart to-liabilitiesGradientEnd",
+    default: "",
   };
 
   const filteredItems = items.filter((item) => item.balance > 0);
@@ -372,7 +373,7 @@ function SummaryCard({
             <button
               onClick={onClick}
               className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
-              aria-label="Refresh"
+              aria-label="Next summary card"
             >
               <RefreshCw size={16} />
             </button>
@@ -385,7 +386,7 @@ function SummaryCard({
       <div className="border-t border-white/20 pt-3">
         <div className="flex gap-6 text-size-5xsm">
           {filteredItems.map((item, index) => (
-            <div key={index} className="flex flex-col">
+            <div key={item.name+item.balance} className="flex flex-col">
               <span className="opacity-70 truncate max-w-[100px]">
                 {item.name}
               </span>
