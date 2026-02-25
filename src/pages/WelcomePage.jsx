@@ -31,7 +31,7 @@ export default function WelcomePage({ children }) {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const localhost = import.meta.env.VITE_LOCALHOST_URI;
 
-  // custom google login authorisation process redirects and refreshes the page hence need to fetch auth code for url
+  // Custom Google login authorisation process redirects and refreshes the page, hence we need to fetch the auth code from the URL
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const authCode = urlParams.get("code");

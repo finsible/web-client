@@ -54,7 +54,7 @@ export default function PageLayout({ children }) {
         {children}
         {!isMobile && !isTransactionPopup && (
           <div
-            className={`cursor-pointer bg-primary opacity-60 hover:opacity-100 rounded-4xl fixed p-3 bottom-6 right-6 z-100`}
+            className={`cursor-pointer bg-primary opacity-60 hover:opacity-100 rounded-4xl fixed p-3 bottom-6 right-6 z-50`}
             onClick={() => handleTransactionPopup(true)}
           >
             <Plus className="text-background" size={25} />
